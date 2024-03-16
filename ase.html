@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AES Encryption Demo</title>
+</head>
+<body>
+    <h2>AES Encryption Demo</h2>
+
+    <label for="inputText">Enter text to encrypt:</label><br>
+    <input type="text" id="inputText"><br><br>
+    <label for="key">Enter encryption key:</label><br>
+    <input type="text" id="key"><br><br>
+    <button onclick="encryptText()">Encrypt</button><br>
+    <p>Encrypted Text: <span id="encryptedText"></span></p><br>
+    <button onclick="decryptText()">Decrypt</button><br>
+    <p>Decrypted Text: <span id="decryptedText"></span></p>
+
+    <script>
+        var AES = {
+    // AES加密
+    encrypt: function(text, key) {
+        var keyExpansion = this.keyExpansion(key);
+        var state = this.convertTextToState(text);
+        
+        // 初始轮密钥加
+        state = this.addRoundKey(state, keyExpansion.slice(0, 4));
+
+        for (var round = 1; round < keyExpansion.length / 4 - 1; round++) {
+            state = this.subBytes(state);
+            state = this.shiftRows(state);
+            state = this.mixColumns(state);
+            state = this.addRoundKey(state, keyExpansion.slice(round * 4, round * 4 + 4));
+        }
+
+        // 最后一轮不需要MixColumns
+        state = this.subBytes(state);
+        state = this.shiftRows(state);
+        state = this.addRoundKey(state, keyExpansion.slice(-4));
+        
+        return this.convertStateToText(state);
+    },
+
+    // AES解密
+    decrypt: function(encryptedText, key) {
+        var keyExpansion = this.keyExpansion(key);
+        var state = this.convertTextToState(encryptedText);
+        
+        state = this.addRoundKey(state, keyExpansion.slice(-4));
+
+        for (var round = keyExpansion.length / 4 - 2; round > 0; round--) {
+            state = this.invShiftRows(state);
+            state = this.invSubBytes(state);
+            state = this.addRoundKey(state, keyExpansion.slice(round * 4, round * 4 + 4));
+            state = this.invMixColumns(state);
+        }
+
+        state = this.invShiftRows(state);
+        state = this.invSubBytes(state);
+        state = this.addRoundKey(state, keyExpansion.slice(0, 4));
+
+        return this.convertStateToText(state);
+    },
+
+    // keyExpansion等其他函数的实现...
+};
+
+
+
+
+        function encryptText() {
+            var inputText = document.getElementById("inputText").value;
+            var key = document.getElementById("key").value;
+            var encryptedText = AES.encrypt(inputText, key);
+            document.getElementById("encryptedText").innerText = encryptedText;
+        }
+
+        function decryptText() {
+            var encryptedText = document.getElementById("encryptedText").innerText;
+            var key = document.getElementById("key").value;
+            var decryptedText = AES.decrypt(encryptedText, key);
+            document.getElementById("decryptedText").innerText = decryptedText;
+        }
+    </script>
+</body>
+</html>

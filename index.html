@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Black Theme Clock</title>
+<style>
+body {
+background-color: black;
+color: white;
+text-align: center;
+font-size: 2em;
+padding-top: 20%;
+}
+</style>
+</head>
+<body>
+<h5 id="clock"></h5>
+
+<script>
+    function updateTime() {
+        let currentTime = new Date();
+        let hours = currentTime.getHours();
+        let minutes = currentTime.getMinutes();
+        let seconds = currentTime.getSeconds();
+        
+        hours = (hours < 10) ? "0" + hours : hours;
+        minutes = (minutes < 10) ? "0" + minutes : minutes;
+        seconds = (seconds < 10) ? "0" + seconds : seconds;
+        
+        document.getElementById("clock").innerHTML = hours + ":" + minutes + ":" + seconds;
+    }
+
+    setInterval(updateTime, 1000);
+</script>
+</body>
+</html>
